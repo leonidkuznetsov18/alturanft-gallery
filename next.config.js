@@ -2,7 +2,7 @@
 module.exports = {
   reactStrictMode: true,
   images: {
-    formats: ['image/avif', 'image/webp', 'image/jpeg', 'image/png', "image/jpg"],
+    formats: ['image/avif', 'image/webp'],
     domains: ['nft-cdn.alchemy.com', 'res.cloudinary.com'],
   },
 }

@@ -1,10 +1,14 @@
 import CopyToClipboard from "../CopyToClipboard";
 import {getCleanTokenId, shortAddress} from "../../utils/common";
+import {useRouter} from "next/router";
 
 
 const NFTDetail = ({ nft }): JSX.Element => {
+
+    const router = useRouter()
     return (
         <div className="flex flex-col y-gap-2 px-2 py-3 bg-slate-100 rounded-b-md h-110 ">
+            <button onClick={() => router.back()}>Back</button>
         <div className="">
             <h2 className="text-xl text-gray-800">{nft.title}</h2>
             <p className="text-gray-600">Id: {getCleanTokenId(nft.tokenId)}</p>

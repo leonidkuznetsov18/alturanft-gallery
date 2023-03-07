@@ -1,3 +1,4 @@
+import Link from "next/link";
 
 export const NFTCard = ({ nft }) => {
     console.log('nft:', nft);
