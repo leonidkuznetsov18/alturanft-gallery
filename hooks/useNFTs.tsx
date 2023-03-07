@@ -1,4 +1,4 @@
-import {useMutation} from "@tanstack/react-query";
+import {useMutation, useQueryClient} from "@tanstack/react-query";
 import alchemyAPI from "../api"
 import {useState} from "react";
 
@@ -55,5 +55,5 @@ export const useNFTs = () => {
    }
     const { isLoading, isError, error, data, mutate } = useMutation(getData);
 
-    return { isLoading, isError, error, data: data?.nfts || data?.ownedNfts || [], getNFTs: mutate, pageKey: data?.pageKey };
+    return { isLoading, isError, error, data: data?.nfts?.filter(i => i.media.length !== 0) || data?.ownedNfts?.filter(i => i.media.length !== 0)  || [], getNFTs: mutate, pageKey: data?.pageKey };
 };

@@ -3,17 +3,14 @@ import { motion } from 'framer-motion'
 import { useRouter } from 'next/router'
 import { useRef, useState } from 'react'
 import NFTDetail from "../NFTDetail";
+import { XMarkIcon } from '@heroicons/react/24/solid'
 
 export default function Modal({
-                                  onClose,
-                              }: {
-
-    onClose?: () => void
-}) {
+    nft,
+                                  onClose
+                              }) {
     const router = useRouter()
-
     function handleClose() {
-        router.push('/', undefined, { shallow: true })
         onClose()
     }
 
@@ -30,10 +27,11 @@ export default function Modal({
             {/* Full-screen container to center the panel */}
             <div className="fixed inset-0 flex items-center justify-center p-4">
                 {/* The actual dialog panel  */}
-                <Dialog.Panel className="mx-auto max-w-sm rounded bg-white">
-                    <Dialog.Title>Title</Dialog.Title>
-
-                   <NFTDetail nft={{}} />
+                <Dialog.Panel className="relative mx-auto max-w-lg rounded bg-white">
+                    <button className={'absolute top-[5px] right-[5px] z-10 w-[24px] h-[24px]'} onClick={handleClose}>
+                        <XMarkIcon />
+                    </button>
+                   <NFTDetail nft={nft} />
                 </Dialog.Panel>
             </div>
 

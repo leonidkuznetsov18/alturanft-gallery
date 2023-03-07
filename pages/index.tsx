@@ -1,15 +1,11 @@
 import type { NextPage } from 'next'
 
-import NFTGallery from "../components/NFTGallery";
-import {useEffect, useRef, useState} from "react"
+import {useEffect, useState} from "react"
 import PaginationBar from "../components/PaginnationBar";
 import { useNFTs } from "../hooks/useNFTs";
 import PageContainer from "../components/PageContainer";
 import Modal from "../components/Modal";
-import {useRouter} from "next/router";
-import {useLastViewedNFT} from "../utils/useLastViewedNFT";
 import NFTCard from "../components/NFTCard";
-import Link from "next/link";
 
 const Home: NextPage = () => {
     const [walletAddress, setWalletAddress] = useState("");
@@ -18,23 +14,7 @@ const Home: NextPage = () => {
     const { isLoading, isError, error, data, getNFTs, pageKey } = useNFTs();
     const [pageKeys, setPageKeys] = useState([""]);
     const [currentPage, setCurrentPage] = useState(0);
-
-    const router = useRouter();
-    const { nftId } = router.query;
-
-    console.log('nftId', nftId);
-    const [lastViewedNFT, setLastViewedNFT] = useLastViewedNFT();
-
-    const lastViewedNftRef = useRef<HTMLAnchorElement>(null);
-
-    useEffect(() => {
-        // This effect keeps track of the last viewed photo in the modal to keep the index page in sync when the user navigates back
-        if (lastViewedNFT && !nftId) {
-            lastViewedNftRef.current.scrollIntoView({ block: 'center' })
-            setLastViewedNFT(null)
-        }
-    }, [nftId, lastViewedNFT])
-
+    const [currentNft, setCurrentNft] = useState(null);
 
     // this logic need for updating page in pagination
     useEffect(() => {
@@ -68,6 +48,9 @@ const Home: NextPage = () => {
             pageKey,
             isFetchForContract: fetchForCollection
         });
+
+        setPageKeys([""]);
+        setCurrentPage(0);
     }
 
     const onClickPage = async (pageIndex) => {
@@ -86,11 +69,11 @@ const Home: NextPage = () => {
     console.log("pageKeys", pageKeys);
   return (
         <PageContainer>
-            {nftId && (
+            {currentNft && (
                 <Modal
-                    // data={[]}
+                    nft={currentNft}
                     onClose={() => {
-                        setLastViewedNFT(nftId)
+                        setCurrentNft(null);
                     }}
                 />
             )}
@@ -139,22 +122,22 @@ const Home: NextPage = () => {
                 </div>
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
                     {data?.map((nft) => {
-                        console.log('nft', nft)
                         return (
-                            <Link href={`/?nftId=${nft.tokenId}`}
-                                  as={`/nft-details/${nft.tokenId}`}
-                                  ref={nft.tokenId === lastViewedNFT ? lastViewedNftRef : null}
-                                  shallow key={nft.tokenId}>
-                                <NFTCard nft={nft} />
-                            </Link>
+                            <NFTCard nft={nft} key={nft.tokenId} onClick={() => setCurrentNft(nft)}  />
                         )
                     })}
                 </div>
 
-                <>
-                    {isLoading && <div className="flex justify-center items-center mt-4"> Loading ... </div>}
-                    {isError && <div className="flex justify-center items-center mt-4">Error: {JSON.stringify(error)} </div>}
-                </>
+                {
+                    <>
+                        {isLoading && <div className="flex justify-center items-center mt-4"> Loading ... </div>}
+
+                        {isError && <div className="flex justify-center items-center mt-4">Error: {JSON.stringify(error)} </div>}
+
+                        {!isLoading && !isError && data.length === 0 && <div className="flex justify-center items-center mt-4"> Retry please or change input data </div>}
+                    </>
+                }
+
 
 
                 {pageKeys.length > 1 && (
