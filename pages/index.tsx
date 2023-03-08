@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import type { NextPage } from 'next';
 import InfiniteScroll from 'react-infinite-scroll-component';
@@ -12,9 +12,20 @@ const Home: NextPage = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [collectionAddress, setCollectionAddress] = useState('');
   const [fetchForCollection, setFetchForCollection] = useState(false);
-  const { data, getNFTs, pageKey } = useNFTs();
+  const { isError, error, data, getNFTs, pageKey } = useNFTs();
+
+  const [nfts, setNfts] = useState([]);
 
   const [currentNft, setCurrentNft] = useState(null);
+
+  useEffect(() => {
+    if (data) {
+      setNfts((prevState) => [
+        ...prevState,
+        ...(data.nfts || data.ownedNfts)?.filter((i) => i.media.length !== 0),
+      ]);
+    }
+  }, [data]);
 
   const handleWalletChange = (e) => {
     setWalletAddress(e.target.value);
@@ -36,6 +47,7 @@ const Home: NextPage = () => {
       contractAddress: collectionAddress,
       isFetchForContract: fetchForCollection,
     });
+    setNfts([]);
   };
 
   return (
@@ -89,7 +101,7 @@ const Home: NextPage = () => {
                 placeholder="Add the collection address"
                 type="text"
                 id="collection-input"
-                className="sm:text-md block w-full truncate rounded-lg border border-gray-300 bg-white p-4 text-black focus:border-blue-500 focus:ring-blue-500"
+                className="sm:text-md block w-full truncate rounded-lg border border-gray-300 bg-white p-4 text-black focus:border-blue-500 focus:ring-blue-500 disabled:bg-gray-500 disabled:text-gray-200"
               />
             </div>
             <div className="mb-2 mb-6 self-start">
@@ -117,7 +129,7 @@ const Home: NextPage = () => {
         </div>
 
         <InfiniteScroll
-          dataLength={data?.length}
+          dataLength={nfts?.length}
           next={() =>
             getNFTs({
               walletAddress,
@@ -130,7 +142,7 @@ const Home: NextPage = () => {
           loader={<h4>Loading...</h4>}
         >
           <div className="List grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-            {data?.map((nft) => {
+            {nfts?.map((nft) => {
               return (
                 <div className={'ListItem'} key={nft.tokenId}>
                   <NFTCard nft={nft} onClick={() => setCurrentNft(nft)} />
@@ -139,6 +151,16 @@ const Home: NextPage = () => {
             })}
           </div>
         </InfiniteScroll>
+
+        {
+          <>
+            {isError && (
+              <div className="mt-4 flex items-center justify-center">
+                Error: {JSON.stringify(error)}{' '}
+              </div>
+            )}
+          </>
+        }
       </div>
     </PageContainer>
   );

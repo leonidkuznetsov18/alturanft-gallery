@@ -39,7 +39,6 @@ export const getNftsForContract = async (data: IArgsNFT) => {
 };
 
 export const useNFTs = () => {
-  const [nfts, setNfts] = useState([]);
   const [pageKey, setPageKey] = useState(undefined);
   const getData = async (args: IArgsNFT) => {
     const { isFetchForContract, contractAddress } = args;
@@ -50,16 +49,12 @@ export const useNFTs = () => {
       } else {
         res = await getNftsForOwner(args);
       }
-      setNfts((prevState) => [
-        ...prevState,
-        ...(res.nfts || res.ownedNfts)?.filter((i) => i.media.length !== 0),
-      ]);
       if (res.pageKey) {
         setPageKey(res.pageKey);
       } else {
         setPageKey(pageKey);
       }
-      return nfts;
+      return res;
     } catch (error) {
       console.log(error);
       throw new Error(error);
@@ -67,5 +62,5 @@ export const useNFTs = () => {
   };
   const { isLoading, isError, error, data, mutate } = useMutation(getData);
 
-  return { isLoading, isError, error, data: nfts, getNFTs: mutate, pageKey };
+  return { isLoading, isError, error, data, getNFTs: mutate, pageKey };
 };
