@@ -52,7 +52,7 @@ export const useNFTs = () => {
       if (res.pageKey) {
         setPageKey(res.pageKey);
       } else {
-        setPageKey(pageKey);
+        setPageKey(undefined);
       }
       return res;
     } catch (error) {
