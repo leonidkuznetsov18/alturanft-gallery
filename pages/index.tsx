@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 
 import type { NextPage } from 'next';
 import InfiniteScroll from 'react-infinite-scroll-component';
+import { v4 as uuidv4 } from 'uuid';
 
 import { useNFTs } from '../hooks/useNFTs';
 import PageContainer from '../components/PageContainer';
@@ -22,7 +23,12 @@ const Home: NextPage = () => {
     if (data) {
       setNfts((prevState) => [
         ...prevState,
-        ...(data.nfts || data.ownedNfts)?.filter((i) => i.media.length !== 0),
+        ...(data.nfts || data.ownedNfts)
+          ?.filter((i) => i.media.length !== 0)
+          .map((i) => ({
+            ...i,
+            id: uuidv4(),
+          })),
       ]);
     }
   }, [data]);
@@ -144,7 +150,7 @@ const Home: NextPage = () => {
           <div className="List grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {nfts?.map((nft) => {
               return (
-                <div className={'ListItem'} key={nft.tokenId}>
+                <div className={'ListItem'} key={nft.id}>
                   <NFTCard nft={nft} onClick={() => setCurrentNft(nft)} />
                 </div>
               );

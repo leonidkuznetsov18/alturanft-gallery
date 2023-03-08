@@ -19,14 +19,16 @@
     "react-dom": "^18.2.0",
     "react-hooks-global-state": "^2.0.0",
     "react-infinite-scroll-component": "^6.1.0",
-    "react-lazy-load-image-component": "^1.5.6"
+    "react-lazy-load-image-component": "^1.5.6",
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@types/node": "18.11.9",
     "@types/react": "18.0.25",
-    "autoprefixer": "^10.4.13",
+    "@types/uuid": "^9.0.1",
     "@typescript-eslint/eslint-plugin": "5.7.0",
     "@typescript-eslint/parser": "5.7.0",
+    "autoprefixer": "^10.4.13",
     "eslint": "^8.35.0",
     "eslint-config-airbnb": "19.0.2",
     "eslint-config-airbnb-typescript": "16.1.0",
