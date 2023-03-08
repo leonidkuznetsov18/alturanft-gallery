@@ -1,202 +1,147 @@
-import type { NextPage } from 'next'
+import { useState } from 'react';
 
-import {useEffect, useState} from "react"
-import PaginationBar from "../components/PaginnationBar";
-import { useNFTs } from "../hooks/useNFTs";
-import PageContainer from "../components/PageContainer";
-import Modal from "../components/Modal";
-import NFTCard from "../components/NFTCard";
-// import useInfiniteScroll from "react-infinite-scroll-hook";
-import InfiniteScroll from "react-infinite-scroll-component";
+import type { NextPage } from 'next';
+import InfiniteScroll from 'react-infinite-scroll-component';
+
+import { useNFTs } from '../hooks/useNFTs';
+import PageContainer from '../components/PageContainer';
+import Modal from '../components/Modal';
+import NFTCard from '../components/NFTCard';
 
 const Home: NextPage = () => {
-    const [walletAddress, setWalletAddress] = useState("");
-    const [collectionAddress, setCollectionAddress] = useState("");
-    const [fetchForCollection, setFetchForCollection] = useState(false)
-    const { isLoading, isError, error, data, getNFTs, pageKey } = useNFTs();
-    const [pageKeys, setPageKeys] = useState([""]);
-    // const [currentPage, setCurrentPage] = useState(0);
-    const [currentNft, setCurrentNft] = useState(null);
+  const [walletAddress, setWalletAddress] = useState('');
+  const [collectionAddress, setCollectionAddress] = useState('');
+  const [fetchForCollection, setFetchForCollection] = useState(false);
+  const { data, getNFTs, pageKey } = useNFTs();
 
-    console.log('data', data);
-    console.log('isError', isError);
-    console.log('isLoading', isLoading);
+  const [currentNft, setCurrentNft] = useState(null);
 
-    // const { loading, items, hasNextPage, error, loadMore } = useLoadItems();
+  const handleWalletChange = (e) => {
+    setWalletAddress(e.target.value);
+  };
 
-    // const [infiniteRef, { rootRef }] = useInfiniteScroll({
-    //     loading: isLoading,
-    //     hasNextPage,
-    //     onLoadMore: () => {
-    //         debugger;
-    //         getNFTs({
-    //             walletAddress,
-    //             contractAddress: collectionAddress,
-    //             pageKey: pageKey,
-    //             isFetchForContract: fetchForCollection
-    //         });
-    //     },
-    //     disabled: isError,
-    //     rootMargin: '0px 0px 400px 0px',
-    // });
+  const handleCollectionChange = (e) => {
+    setCollectionAddress(e.target.value);
+  };
 
-    // this logic need for updating page in pagination
-    // useEffect(() => {
-    //     if (pageKey) {
-    //         setPageKeys((prevKeys) => {
-    //             const newKeys = [...prevKeys];
-    //             newKeys[currentPage + 1] = pageKey;
-    //
-    //             return newKeys;
-    //         });
-    //     }
-    // }, [pageKey]);
-    const handleWalletChange = (e) => {
-        setWalletAddress(e.target.value);
-    };
+  const handleFetchForCollectionChange = (e) => {
+    setFetchForCollection(e.target.checked);
+  };
 
-    const handleCollectionChange = (e) => {
-        setCollectionAddress(e.target.value);
-    }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // in this case we use pageKey from response
+    getNFTs({
+      walletAddress,
+      contractAddress: collectionAddress,
+      isFetchForContract: fetchForCollection,
+    });
+  };
 
-    const handleFetchForCollectionChange = (e) => {
-        setFetchForCollection(e.target.checked);
-    }
+  return (
+    <PageContainer>
+      {currentNft && (
+        <Modal
+          nft={currentNft}
+          onClose={() => {
+            setCurrentNft(null);
+          }}
+        />
+      )}
+      <div className="flex flex-col items-center justify-center gap-y-3 py-8">
+        <h1
+          className={
+            'mb-6 text-4xl font-extrabold leading-none tracking-tight text-gray-900 md:text-5xl lg:text-6xl'
+          }
+        >
+          AlturaNFT Gallery
+        </h1>
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // in this case we use pageKey from response
-        getNFTs({
-            walletAddress,
-            contractAddress: collectionAddress,
-            // pageKey,
-            isFetchForContract: fetchForCollection
-        });
-
-        // setPageKeys([""]);
-        // setCurrentPage(0);
-    }
-
-    // const onClickPage = async (pageIndex) => {
-    //     if (currentPage === pageIndex) return;
-    //     // in this case we use pageKey from pageKeys array
-    //     getNFTs({
-    //         walletAddress,
-    //         contractAddress: collectionAddress,
-    //         pageKey: pageKeys[pageIndex],
-    //         isFetchForContract: fetchForCollection
-    //     });
-    //     setCurrentPage(pageIndex);
-    // };
-
-    console.log("pageKey", pageKey);
-    console.log("pageKeys", pageKeys);
-    return (
-        <PageContainer>
-            {currentNft && (
-                <Modal
-                    nft={currentNft}
-                    onClose={() => {
-                        setCurrentNft(null);
-                    }}
+        <div className="mb-6">
+          <form className="flex flex-col items-center">
+            <div className="mb-2">
+              <label
+                htmlFor="wallet-input"
+                className="mb-2 block text-left text-sm font-medium text-black"
+              >
+                Wallet Address
+              </label>
+              <input
+                disabled={fetchForCollection}
+                onChange={handleWalletChange}
+                value={walletAddress}
+                placeholder="Add your wallet address"
+                type="text"
+                id="wallet-input"
+                className="sm:text-md block w-full truncate rounded-lg border border-gray-300 bg-white p-4 text-black focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-2">
+              <label
+                htmlFor="collection-input"
+                className="mb-2 block text-left text-sm font-medium text-black"
+              >
+                Collection Address
+              </label>
+              <input
+                onChange={handleCollectionChange}
+                value={collectionAddress}
+                placeholder="Add the collection address"
+                type="text"
+                id="collection-input"
+                className="sm:text-md block w-full truncate rounded-lg border border-gray-300 bg-white p-4 text-black focus:border-blue-500 focus:ring-blue-500"
+              />
+            </div>
+            <div className="mb-2 mb-6 self-start">
+              <label className="text-gray-600">
+                <input
+                  type={'checkbox'}
+                  className="mr-2"
+                  onChange={handleFetchForCollectionChange}
                 />
-            )}
-            <div className="flex flex-col items-center justify-center py-8 gap-y-3">
-                <div className="flex flex-col w-full justify-center items-center gap-y-2">
-                    <div>
-                        <label htmlFor="email" className="text-black text-sm">Wallet Address</label>
-
-                        <div className="relative">
-
-                            <input disabled={fetchForCollection}
-                                   className="disabled:text-gray-400 w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm"
-                                   onChange={handleWalletChange}
-                                   value={walletAddress} type={"text"}
-                                   placeholder="Add your wallet address"
-                            />
-                        </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="email" className="text-black text-sm">Collection Address</label>
-
-                        <div className="relative">
-
-                            <input
-                                className="w-full rounded-lg border-gray-200 p-4 pr-12 text-sm shadow-sm"
-                                onChange={handleCollectionChange}
-                                value={collectionAddress}
-                                type={"text"}
-                                placeholder="Add the collection address" />
-                        </div>
-
-                        <div className="relative">
-                            <label className="text-gray-600">
-                                <input type={"checkbox"} className="mr-2" onChange={handleFetchForCollectionChange} />
-                                Fetch for collection
-                            </label>
-                        </div>
-
-                        <div>
-                            <button
-                                disabled={!walletAddress && !collectionAddress}
-                                className={"w-full disabled:bg-slate-500 text-white bg-blue-400 px-4 py-2 mt-3 rounded-sm"} onClick={handleSubmit}>Fetch NFTs</button>
-                        </div>
-                    </div>
-                </div>
-                <InfiniteScroll
-                    dataLength={data?.length}
-                    next={() =>   getNFTs({
-                        walletAddress,
-                        contractAddress: collectionAddress,
-                        // pageKey: pageKeys[pageIndex],
-                        pageKey: pageKey,
-                        isFetchForContract: fetchForCollection
-                    })}
-                    hasMore={!!pageKey}
-                    loader={<h4>Loading...</h4>}
-                >
-                    <div className="List grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                        {data?.map((nft) => {
-                            return (
-                                <div className={'ListItem'} key={nft.tokenId}>
-                                    <NFTCard nft={nft}  onClick={() => setCurrentNft(nft)}  />
-                                </div>
-
-                            )
-                        })}
-
-                    </div>
-                </InfiniteScroll>
-                {/*{hasNextPage || isLoading && <div className={'ListItem'} ref={infiniteRef}>*/}
-                {/*    <div className="flex justify-center items-center mt-4"> Loading ... </div>*/}
-                {/*</div>*/}
-                {/*}*/}
-
-                {
-                    <>
-                        {/*{ isLoading && <div className="flex justify-center items-center mt-4"> Loading ... </div>}*/}
-
-                        {/*{isError && <div className="flex justify-center items-center mt-4">Error: {JSON.stringify(error)} </div>}*/}
-
-                        {/*{!isLoading && !isError && data.length === 0 && <div className="flex justify-center items-center mt-4"> Retry please or change input data </div>}*/}
-                    </>
-                }
-
-
-
-                {/*{pageKeys.length > 1 && (*/}
-                {/*    <PaginationBar*/}
-                {/*        currentPage={currentPage}*/}
-                {/*        pageKeys={pageKeys}*/}
-                {/*        onClickPage={onClickPage}*/}
-                {/*        className="border-t"*/}
-                {/*    />*/}
-                {/*)}*/}
+                Fetch for collection
+              </label>
             </div>
 
-        </PageContainer>
-    )
-}
+            <div>
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={!walletAddress && !collectionAddress}
+                className="mr-2 mb-2 cursor-pointer rounded-lg border border-blue-700 px-5 py-2.5 text-center text-sm font-medium text-blue-700 hover:bg-blue-800 hover:text-white focus:outline-none focus:ring-4 focus:ring-blue-300 disabled:cursor-default disabled:bg-gray-500 disabled:text-gray-200"
+              >
+                Fetch NFTs
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <InfiniteScroll
+          dataLength={data?.length}
+          next={() =>
+            getNFTs({
+              walletAddress,
+              contractAddress: collectionAddress,
+              pageKey: pageKey,
+              isFetchForContract: fetchForCollection,
+            })
+          }
+          hasMore={!!pageKey}
+          loader={<h4>Loading...</h4>}
+        >
+          <div className="List grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+            {data?.map((nft) => {
+              return (
+                <div className={'ListItem'} key={nft.tokenId}>
+                  <NFTCard nft={nft} onClick={() => setCurrentNft(nft)} />
+                </div>
+              );
+            })}
+          </div>
+        </InfiniteScroll>
+      </div>
+    </PageContainer>
+  );
+};
 
 export default Home;

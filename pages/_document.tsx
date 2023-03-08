@@ -1,9 +1,9 @@
-import Document, { Head, Html, Main, NextScript } from 'next/document'
+import Document, { Head, Html, Main, NextScript } from 'next/document';
 
 class MyDocument extends Document {
   render() {
     return (
-      <Html lang="en" className="text-gray-900 antialiased leading-tight">
+      <Html lang="en" className="leading-tight text-gray-900 antialiased">
         <Head>
           <link rel="icon" href="/favicon.ico" />
           <meta
@@ -28,8 +28,8 @@ class MyDocument extends Document {
           <NextScript />
         </body>
       </Html>
-    )
+    );
   }
 }
 
-export default MyDocument
+export default MyDocument;

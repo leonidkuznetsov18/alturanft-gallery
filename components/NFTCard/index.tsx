@@ -1,23 +1,29 @@
+import DynamicMediaTag from '../DynamicMediaTag';
 
-function getTagByFormat(format, url) {
-    if (format === 'mp4' || format === 'webm') {
-        return <video muted autoPlay src={url} controls={false} className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110 aspect-auto object-cover h-3/4" />;
-    } else {
-        return <img src={url} className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110 aspect-auto object-cover h-3/4" />;
-    }
+interface INFTCardProps {
+  nft: any;
+  onClick: () => void;
 }
-export const NFTCard = ({ nft, onClick,  }) => {
-    return (
-        <div  onClick={onClick} className="after:content group relative cursor-zoom-in after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight flex flex-col">
-            <div className="rounded-md bg-gray-100 shadow-md drop-shadow-md flex justify-center items-center h-full w-full">
-                {getTagByFormat(nft?.media[0]?.format, nft?.media[0]?.gateway)}
-            </div>
-            <div className="flex flex-col y-gap-2 px-2 py-3 bg-slate-100 rounded-b-md h-110 ">
-                <h2 className="text-xl text-gray-800">{nft.title || 'No title'}</h2>
-            </div>
-
-        </div>
-    )
-}
+export const NFTCard = (props: INFTCardProps): JSX.Element => {
+  const { nft, onClick } = props;
+  return (
+    <div
+      onClick={onClick}
+      className="flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-lg border bg-white p-4"
+    >
+      <div className="relative h-[200px] w-[200px] overflow-hidden rounded">
+        <DynamicMediaTag
+          format={nft?.media[0]?.format}
+          url={nft?.media[0]?.gateway}
+        />
+      </div>
+      <div className="w-full p-2 text-center ">
+        <p className="mt-1 truncate text-lg font-semibold leading-tight ">
+          {nft.title || 'No title'}
+        </p>
+      </div>
+    </div>
+  );
+};
 
 export default NFTCard;
