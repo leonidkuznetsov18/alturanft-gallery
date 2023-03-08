@@ -13,7 +13,7 @@ const Home: NextPage = () => {
   const [walletAddress, setWalletAddress] = useState('');
   const [collectionAddress, setCollectionAddress] = useState('');
   const [fetchForCollection, setFetchForCollection] = useState(false);
-  const { isError, error, data, getNFTs, pageKey } = useNFTs();
+  const { isLoading, isError, error, data, getNFTs, pageKey } = useNFTs();
 
   const [nfts, setNfts] = useState([]);
 
@@ -163,6 +163,11 @@ const Home: NextPage = () => {
             {isError && (
               <div className="mt-4 flex items-center justify-center">
                 Error: {JSON.stringify(error)}{' '}
+              </div>
+            )}
+            {isLoading && (
+              <div className="mt-4 flex items-center justify-center">
+                Loading...
               </div>
             )}
           </>
