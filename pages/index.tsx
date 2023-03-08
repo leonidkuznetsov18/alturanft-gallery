@@ -6,6 +6,8 @@ import { useNFTs } from "../hooks/useNFTs";
 import PageContainer from "../components/PageContainer";
 import Modal from "../components/Modal";
 import NFTCard from "../components/NFTCard";
+// import useInfiniteScroll from "react-infinite-scroll-hook";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 const Home: NextPage = () => {
     const [walletAddress, setWalletAddress] = useState("");
@@ -13,20 +15,42 @@ const Home: NextPage = () => {
     const [fetchForCollection, setFetchForCollection] = useState(false)
     const { isLoading, isError, error, data, getNFTs, pageKey } = useNFTs();
     const [pageKeys, setPageKeys] = useState([""]);
-    const [currentPage, setCurrentPage] = useState(0);
+    // const [currentPage, setCurrentPage] = useState(0);
     const [currentNft, setCurrentNft] = useState(null);
 
-    // this logic need for updating page in pagination
-    useEffect(() => {
-        if (pageKey) {
-            setPageKeys((prevKeys) => {
-                const newKeys = [...prevKeys];
-                newKeys[currentPage + 1] = pageKey;
+    console.log('data', data);
+    console.log('isError', isError);
+    console.log('isLoading', isLoading);
 
-                return newKeys;
-            });
-        }
-    }, [pageKey]);
+    // const { loading, items, hasNextPage, error, loadMore } = useLoadItems();
+
+    // const [infiniteRef, { rootRef }] = useInfiniteScroll({
+    //     loading: isLoading,
+    //     hasNextPage,
+    //     onLoadMore: () => {
+    //         debugger;
+    //         getNFTs({
+    //             walletAddress,
+    //             contractAddress: collectionAddress,
+    //             pageKey: pageKey,
+    //             isFetchForContract: fetchForCollection
+    //         });
+    //     },
+    //     disabled: isError,
+    //     rootMargin: '0px 0px 400px 0px',
+    // });
+
+    // this logic need for updating page in pagination
+    // useEffect(() => {
+    //     if (pageKey) {
+    //         setPageKeys((prevKeys) => {
+    //             const newKeys = [...prevKeys];
+    //             newKeys[currentPage + 1] = pageKey;
+    //
+    //             return newKeys;
+    //         });
+    //     }
+    // }, [pageKey]);
     const handleWalletChange = (e) => {
         setWalletAddress(e.target.value);
     };
@@ -45,29 +69,29 @@ const Home: NextPage = () => {
         getNFTs({
             walletAddress,
             contractAddress: collectionAddress,
-            pageKey,
+            // pageKey,
             isFetchForContract: fetchForCollection
         });
 
-        setPageKeys([""]);
-        setCurrentPage(0);
+        // setPageKeys([""]);
+        // setCurrentPage(0);
     }
 
-    const onClickPage = async (pageIndex) => {
-        if (currentPage === pageIndex) return;
-        // in this case we use pageKey from pageKeys array
-        getNFTs({
-            walletAddress,
-            contractAddress: collectionAddress,
-            pageKey: pageKeys[pageIndex],
-            isFetchForContract: fetchForCollection
-        });
-        setCurrentPage(pageIndex);
-    };
+    // const onClickPage = async (pageIndex) => {
+    //     if (currentPage === pageIndex) return;
+    //     // in this case we use pageKey from pageKeys array
+    //     getNFTs({
+    //         walletAddress,
+    //         contractAddress: collectionAddress,
+    //         pageKey: pageKeys[pageIndex],
+    //         isFetchForContract: fetchForCollection
+    //     });
+    //     setCurrentPage(pageIndex);
+    // };
 
     console.log("pageKey", pageKey);
     console.log("pageKeys", pageKeys);
-  return (
+    return (
         <PageContainer>
             {currentNft && (
                 <Modal
@@ -120,38 +144,59 @@ const Home: NextPage = () => {
                         </div>
                     </div>
                 </div>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-                    {data?.map((nft) => {
-                        return (
-                            <NFTCard nft={nft} key={nft.tokenId} onClick={() => setCurrentNft(nft)}  />
-                        )
+                <InfiniteScroll
+                    dataLength={data?.length}
+                    next={() =>   getNFTs({
+                        walletAddress,
+                        contractAddress: collectionAddress,
+                        // pageKey: pageKeys[pageIndex],
+                        pageKey: pageKey,
+                        isFetchForContract: fetchForCollection
                     })}
-                </div>
+                    hasMore={!!pageKey}
+                    loader={<h4>Loading...</h4>}
+                >
+                    <div className="List grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
+                        {data?.map((nft) => {
+                            return (
+                                <div className={'ListItem'} key={nft.tokenId}>
+                                    <NFTCard nft={nft}  onClick={() => setCurrentNft(nft)}  />
+                                </div>
+
+                            )
+                        })}
+
+                    </div>
+                </InfiniteScroll>
+                {/*{hasNextPage || isLoading && <div className={'ListItem'} ref={infiniteRef}>*/}
+                {/*    <div className="flex justify-center items-center mt-4"> Loading ... </div>*/}
+                {/*</div>*/}
+                {/*}*/}
 
                 {
                     <>
-                        {isLoading && <div className="flex justify-center items-center mt-4"> Loading ... </div>}
+                        {/*{ isLoading && <div className="flex justify-center items-center mt-4"> Loading ... </div>}*/}
 
-                        {isError && <div className="flex justify-center items-center mt-4">Error: {JSON.stringify(error)} </div>}
+                        {/*{isError && <div className="flex justify-center items-center mt-4">Error: {JSON.stringify(error)} </div>}*/}
 
-                        {!isLoading && !isError && data.length === 0 && <div className="flex justify-center items-center mt-4"> Retry please or change input data </div>}
+                        {/*{!isLoading && !isError && data.length === 0 && <div className="flex justify-center items-center mt-4"> Retry please or change input data </div>}*/}
                     </>
                 }
 
 
 
-                {pageKeys.length > 1 && (
-                    <PaginationBar
-                        currentPage={currentPage}
-                        pageKeys={pageKeys}
-                        onClickPage={onClickPage}
-                        className="border-t"
-                    />
-                )}
+                {/*{pageKeys.length > 1 && (*/}
+                {/*    <PaginationBar*/}
+                {/*        currentPage={currentPage}*/}
+                {/*        pageKeys={pageKeys}*/}
+                {/*        onClickPage={onClickPage}*/}
+                {/*        className="border-t"*/}
+                {/*    />*/}
+                {/*)}*/}
             </div>
 
         </PageContainer>
-  )
+    )
 }
 
 export default Home;

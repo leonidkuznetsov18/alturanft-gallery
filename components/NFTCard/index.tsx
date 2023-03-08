@@ -6,10 +6,9 @@ function getTagByFormat(format, url) {
         return <img src={url} className="transform rounded-lg brightness-90 transition will-change-auto group-hover:brightness-110 aspect-auto object-cover h-3/4" />;
     }
 }
-export const NFTCard = ({ nft, onClick }) => {
-    console.log('nft:', nft);
+export const NFTCard = ({ nft, onClick,  }) => {
     return (
-        <div onClick={onClick} className="after:content group relative cursor-zoom-in after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight flex flex-col">
+        <div  onClick={onClick} className="after:content group relative cursor-zoom-in after:pointer-events-none after:absolute after:inset-0 after:rounded-lg after:shadow-highlight flex flex-col">
             <div className="rounded-md bg-gray-100 shadow-md drop-shadow-md flex justify-center items-center h-full w-full">
                 {getTagByFormat(nft?.media[0]?.format, nft?.media[0]?.gateway)}
             </div>

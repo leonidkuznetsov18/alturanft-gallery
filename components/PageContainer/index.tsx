@@ -45,7 +45,7 @@ const PageContainer = (props: any) => {
             </Head>
 
             <div className="siteWrapper w-full h-full">
-                <div className="container mx-auto px-4">
+                <div className="container mx-auto px-4 h-full">
                     {children}
                 </div>
                 <Footer />
