@@ -1,3 +1,5 @@
+import { useState } from 'react';
+
 import type { AppProps } from 'next/app';
 import '../styles/index.css';
 import {
@@ -5,8 +7,6 @@ import {
   Hydrate,
   QueryClientProvider,
 } from '@tanstack/react-query';
-
-import { useState } from 'react';
 
 export default function MyApp({ Component, pageProps }: AppProps) {
   // This ensures that data is not shared
