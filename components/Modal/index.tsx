@@ -1,5 +1,6 @@
 import { Dialog } from '@headlessui/react';
 import { XMarkIcon } from '@heroicons/react/24/solid';
+import { useRouter } from 'next/router';
 
 import NFTDetail from '../NFTDetail';
 
@@ -10,7 +11,10 @@ interface IModalProps {
 
 const Modal = (props: IModalProps): JSX.Element => {
   const { nft, onClose } = props;
+
+  const router = useRouter();
   const handleClose = () => {
+    router.push('/', undefined, { shallow: true });
     onClose();
   };
 

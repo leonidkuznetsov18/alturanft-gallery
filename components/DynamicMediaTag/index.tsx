@@ -10,12 +10,7 @@ const DynamicMediaTag = (props: IDynamicMediaTagProps): JSX.Element => {
     return <video muted autoPlay src={url} controls={false} />;
   } else {
     return (
-      <LazyLoadImage
-        effect="blur"
-        placeholderSrc={'/no-img.png'}
-        alt={'not-found'}
-        src={url}
-      />
+      <LazyLoadImage effect="blur" placeholderSrc={'/no-img.png'} src={url} />
     );
   }
 };

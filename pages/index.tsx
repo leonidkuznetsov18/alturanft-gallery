@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import type { NextPage } from 'next';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 import { useNFTs } from '../hooks/useNFTs';
 import PageContainer from '../components/PageContainer';
 import Modal from '../components/Modal';
 import NFTCard from '../components/NFTCard';
+import { useLastViewedNFT } from '../hooks/useLastViewedNFT';
 
 const Home: NextPage = () => {
   const [walletAddress, setWalletAddress] = useState('');
@@ -18,6 +21,21 @@ const Home: NextPage = () => {
   const [nfts, setNfts] = useState([]);
 
   const [currentNft, setCurrentNft] = useState(null);
+
+  const router = useRouter();
+  const { contractAddress, tokenId } = router.query;
+
+  const [lastViewedNFT, setLastViewedNFT] = useLastViewedNFT();
+
+  const lastViewedNftRef = useRef<HTMLAnchorElement>(null);
+
+  useEffect(() => {
+    // This effect keeps track of the last viewed photo in the modal to keep the index page in sync when the user navigates back
+    if (lastViewedNFT && !tokenId) {
+      lastViewedNftRef.current.scrollIntoView({ block: 'center' });
+      setLastViewedNFT(null);
+    }
+  }, [tokenId, lastViewedNFT]);
 
   useEffect(() => {
     if (data) {
@@ -56,13 +74,17 @@ const Home: NextPage = () => {
     setNfts([]);
   };
 
+  console.log('nftId', tokenId);
+  console.log('currentNft', currentNft);
+
   return (
     <PageContainer>
-      {currentNft && (
+      {currentNft && tokenId && (
         <Modal
           nft={currentNft}
           onClose={() => {
             setCurrentNft(null);
+            setLastViewedNFT(tokenId);
           }}
         />
       )}
@@ -150,9 +172,15 @@ const Home: NextPage = () => {
           <div className="List grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
             {nfts?.map((nft) => {
               return (
-                <div className={'ListItem'} key={nft.id}>
+                <Link
+                  key={nft.id}
+                  href={`/?contractAddress=${nft.contract.address}&tokenId=${nft.tokenId}`}
+                  as={`/nft-details/?contractAddress=${nft.contract.address}&tokenId=${nft.tokenId}`}
+                  ref={nft.tokenId === lastViewedNFT ? lastViewedNftRef : null}
+                  shallow
+                >
                   <NFTCard nft={nft} onClick={() => setCurrentNft(nft)} />
-                </div>
+                </Link>
               );
             })}
           </div>
